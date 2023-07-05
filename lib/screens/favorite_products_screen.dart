@@ -14,7 +14,7 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
   List? productList;
   DbHelper? dbHelper;
 
-  loadMeals() async {
+  loadProducts() async {
     await dbHelper?.openDb();
     final result = await dbHelper?.fetchAll();
     setState(() {
@@ -26,7 +26,7 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
   void initState() {
     dbHelper = DbHelper();
     productList = List.empty();
-    loadMeals();
+    loadProducts();
     super.initState();
   }
 
@@ -60,11 +60,10 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                   ],
                 ),
                 trailing: IconButton(
-                icon: Icon(
-                  product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: product.isFavorite ? Colors.red : null,
-                ),
+                icon: const Icon(Icons.favorite ,color:  Colors.red),
                 onPressed: () {
+                  dbHelper?.delete(product);
+                  productList?.remove(product);
                   setState(() {
                     product.isFavorite = !product.isFavorite;
                   });

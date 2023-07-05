@@ -56,9 +56,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Products App"),
-      ),
       body: ListView.builder(
         itemCount: productList?.length,
         itemBuilder: (context, index) {
