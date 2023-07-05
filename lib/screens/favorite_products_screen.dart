@@ -30,6 +30,22 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
     super.initState();
   }
 
+  int calculateTotalStock() {
+    int totalStock = 0;
+    for (Product product in productList!) {
+      totalStock += product.stock ?? 0;
+    }
+    return totalStock;
+  }
+
+  double calculateTotalPrice() {
+    double totalPrice = 0.0;
+    for (Product product in productList!) {
+      totalPrice += product.price ?? 0.0;
+    }
+    return totalPrice;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,10 +76,10 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                   ],
                 ),
                 trailing: IconButton(
-                icon: const Icon(Icons.favorite ,color:  Colors.red),
+                icon: const Icon(Icons.delete),
                 onPressed: () {
                   dbHelper?.delete(product);
-                  productList?.remove(product);
+                  productList!.remove(product);
                   setState(() {
                     product.isFavorite = !product.isFavorite;
                   });
@@ -72,6 +88,34 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
               ),
             );
           }),
+      floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Total Stock: ${calculateTotalStock()}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'Total Price: \$${calculateTotalPrice().toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+      child: const Icon(Icons.info),
+    ),
     );
   }
 }
