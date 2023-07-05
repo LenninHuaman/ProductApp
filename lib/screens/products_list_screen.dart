@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:product_app/data/local/bd_helper.dart';
 import 'package:product_app/data/remote/product_service.dart';
+
+import '../data/model/product.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -11,19 +14,41 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   ProductService? productService;
   List? productList;
-  bool isFavorite = false;
+  DbHelper? dbHelper;
 
   initialize() async {
     final result = await productService?.getProducts();
+    await dbHelper?.openDb();
+    if (result != null) {
+      for (final product in result) {
+        final isFavorite = await dbHelper?.isFavorite(product);
+        if (isFavorite != null) {
+          product.isFavorite = isFavorite;
+        }
+      }
+    }
     setState(() {
       productList = result!;
     });
   }
   
+  Future<void> toggleFavorite(Product product) async {
+    final isFavorite = product.isFavorite;
+    if (isFavorite) {
+      await dbHelper?.delete(product);
+    } else {
+      await dbHelper?.insert(product);
+    }
+    setState(() {
+      product.isFavorite = !isFavorite;
+    });
+  }
+
   @override
   void initState() {
     productService = ProductService();
     productList = List.empty();
+    dbHelper = DbHelper();
     initialize();
     super.initState();
   }
@@ -62,14 +87,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
               trailing: IconButton(
               icon: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                Icons.favorite,
+                color: product.isFavorite ? Colors.red : Colors.grey,
               ),
-              onPressed: () {
-                setState(() {
-                  isFavorite = !isFavorite;
-                });
-              },
+              onPressed: () => toggleFavorite(product),
             ),
             ),
           );

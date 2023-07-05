@@ -5,6 +5,7 @@ class Product {
   int? price;
   int? stock;
   String? thumbnail;
+  bool isFavorite = false;
 
   Product(
       {this.id,
@@ -32,5 +33,25 @@ class Product {
     data['stock'] = stock;
     data['thumbnail'] = thumbnail;
     return data;
+  }
+
+  Product.fromMap(Map<String, dynamic> map)
+      : this(
+            id: map['id'],
+            title: map['title'],
+            description: map['description'],
+            price: map['price'],
+            stock: map['stock'],
+            thumbnail: map['thumbnail']);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'stock': stock,
+      'thumbnail': thumbnail
+    };
   }
 }
